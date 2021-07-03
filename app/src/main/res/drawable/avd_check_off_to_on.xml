@@ -1,0 +1,76 @@
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="check_off_to_on"
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <path
+                android:name="bg"
+                android:pathData="M 12 0.75 C 9.017 0.75 6.154 1.936 4.045 4.045 C 1.936 6.154 0.75 9.017 0.75 12 C 0.75 14.983 1.936 17.846 4.045 19.955 C 6.154 22.064 9.017 23.25 12 23.25 C 14.983 23.25 17.846 22.064 19.955 19.955 C 22.064 17.846 23.25 14.983 23.25 12 C 23.25 9.017 22.064 6.154 19.955 4.045 C 17.846 1.936 14.983 0.75 12 0.75 Z"
+                android:fillAlpha="0"
+                android:strokeColor="#b8c1cc"
+                android:strokeWidth="1.5"/>
+            <path
+                android:name="fg"
+                android:pathData="M 6.5 12.5 L 10 16 L 17.5 8.5"
+                android:fillAlpha="0"
+                android:strokeColor="#ffffff"
+                android:trimPathEnd="0"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"/>
+        </vector>
+    </aapt:attr>
+    <target android:name="bg">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="strokeColor"
+                    android:duration="200"
+                    android:valueFrom="#b8c1cc"
+                    android:valueTo="#3f8ae0"
+                    android:valueType="colorType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                <objectAnimator
+                    android:propertyName="pathData"
+                    android:duration="150"
+                    android:valueFrom="M 12 0.75 C 9.017 0.75 6.154 1.936 4.045 4.045 C 1.936 6.154 0.75 9.017 0.75 12 C 0.75 14.983 1.936 17.846 4.045 19.955 C 6.154 22.064 9.017 23.25 12 23.25 C 14.983 23.25 17.846 22.064 19.955 19.955 C 22.064 17.846 23.25 14.983 23.25 12 C 23.25 9.017 22.064 6.154 19.955 4.045 C 17.846 1.936 14.983 0.75 12 0.75 Z"
+                    android:valueTo="M 12 6 C 10.409 6 8.882 6.633 7.757 7.757 C 6.633 8.882 6 10.409 6 12 C 6 13.591 6.633 15.118 7.757 16.243 C 8.882 17.367 10.409 18 12 18 C 13.591 18 15.118 17.367 16.243 16.243 C 17.367 15.118 18 13.591 18 12 C 18 10.409 17.367 8.882 16.243 7.757 C 15.118 6.633 13.591 6 12 6 Z"
+                    android:valueType="pathType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                <objectAnimator
+                    android:propertyName="strokeWidth"
+                    android:duration="150"
+                    android:valueFrom="1.5"
+                    android:valueTo="12"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"/>
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="fg">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="trimPathEnd"
+                    android:startOffset="50"
+                    android:duration="150"
+                    android:valueFrom="0"
+                    android:valueTo="1"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                <objectAnimator
+                    android:propertyName="strokeWidth"
+                    android:startOffset="50"
+                    android:duration="20"
+                    android:valueFrom="0"
+                    android:valueTo="2"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"/>
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>
