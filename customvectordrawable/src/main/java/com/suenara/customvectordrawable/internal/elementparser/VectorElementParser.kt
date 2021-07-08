@@ -1,8 +1,8 @@
-package com.suenara.customvectordrawable.elementparser
+package com.suenara.customvectordrawable.internal.elementparser
 
 import android.content.res.XmlResourceParser
-import com.suenara.customvectordrawable.element.Shape
-import com.suenara.customvectordrawable.floatAlphaToInt
+import com.suenara.customvectordrawable.internal.element.Shape
+import com.suenara.customvectordrawable.internal.floatAlphaToInt
 
 internal class VectorElementParser : ElementParser<Shape>() {
     override fun read(parser: XmlResourceParser): Shape {

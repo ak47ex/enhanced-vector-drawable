@@ -1,4 +1,4 @@
-package com.suenara.customvectordrawable
+package com.suenara.customvectordrawable.internal
 
 import android.content.Context
 import android.content.res.XmlResourceParser
@@ -9,7 +9,7 @@ import java.lang.NumberFormatException
 internal fun floatAlphaToInt(alpha: Float): Int = minOf(255, (255 * alpha).toInt())
 
 
-class CachedParser(val parser: XmlResourceParser) : XmlResourceParser by parser {
+internal class CachedParser(val parser: XmlResourceParser) : XmlResourceParser by parser {
     private val attributes = mutableMapOf<String, Map<String, Int>>()
 
     override fun next(): Int {
@@ -22,13 +22,13 @@ class CachedParser(val parser: XmlResourceParser) : XmlResourceParser by parser 
     fun attributes(tag: String): Map<String, Int> = attributes[tag].orEmpty()
 }
 
-fun AttributeSet.attributeIndices(): Map<String, Int> {
+internal fun AttributeSet.attributeIndices(): Map<String, Int> {
     return mutableMapOf<String, Int>().also { map ->
             for (idx in 0 until attributeCount) map[getAttributeName(idx)] = idx
         }
 }
 
-fun String.parseColorInt(): Int {
+internal fun String.parseColorInt(): Int {
     return when (length) {
         2 -> {
             Color.parseColor(buildString {
@@ -48,7 +48,7 @@ fun String.parseColorInt(): Int {
     }
 }
 
-fun dimensionValue(context: Context, value: String): Float {
+internal fun dimensionValue(context: Context, value: String): Float {
     return try {
         DimensionConverter.stringToDimension(value, context)
     } catch (_: NumberFormatException) {

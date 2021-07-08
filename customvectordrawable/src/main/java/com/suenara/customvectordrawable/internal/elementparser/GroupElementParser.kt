@@ -1,7 +1,7 @@
-package com.suenara.customvectordrawable.elementparser
+package com.suenara.customvectordrawable.internal.elementparser
 
 import android.content.res.XmlResourceParser
-import com.suenara.customvectordrawable.element.GroupElement
+import com.suenara.customvectordrawable.internal.element.GroupElement
 
 internal class GroupElementParser : ElementParser<GroupElement>() {
     override fun read(parser: XmlResourceParser): GroupElement {

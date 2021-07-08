@@ -1,12 +1,10 @@
-package com.suenara.customvectordrawable.element
+package com.suenara.customvectordrawable.internal.element
 
 import android.graphics.*
-import android.util.Log
 import androidx.annotation.ColorInt
 import androidx.core.graphics.PathParser
 import androidx.core.graphics.alpha
 import com.suenara.customvectordrawable.CustomVectorDrawable
-import com.suenara.customvectordrawable.floatAlphaToInt
 
 internal class PathElement(
     val name: String?,

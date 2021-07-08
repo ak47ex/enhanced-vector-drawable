@@ -5,10 +5,12 @@ import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.graphics.withTranslation
-import com.suenara.customvectordrawable.element.Shape
+import com.suenara.customvectordrawable.internal.element.Shape
+import com.suenara.customvectordrawable.internal.VectorDrawableParser
 
 class CustomVectorDrawable
 @Throws(Resources.NotFoundException::class)
@@ -46,11 +48,11 @@ constructor(private val resources: Resources, @DrawableRes private val resId: In
     }
 
     override fun setTintList(tint: ColorStateList?) {
-        TODO("Not implemented yet")
+        Log.w(TAG, "tint list is not supported yet")
     }
 
     override fun setTintMode(tintMode: PorterDuff.Mode?) {
-        TODO("Not implemented yet")
+        Log.w(TAG, "tint mode is not supported yet")
     }
 
     override fun onBoundsChange(bounds: Rect) {
@@ -147,5 +149,9 @@ constructor(private val resources: Resources, @DrawableRes private val resId: In
         @get:ColorInt
         @setparam:ColorInt
         var strokeColor: Int
+    }
+
+    companion object {
+        private val TAG = javaClass.simpleName
     }
 }

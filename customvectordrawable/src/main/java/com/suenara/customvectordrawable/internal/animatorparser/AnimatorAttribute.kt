@@ -1,19 +1,14 @@
-package com.suenara.animatedcustomvectordrawable
+package com.suenara.customvectordrawable.internal.animatorparser
 
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.XmlResourceParser
 import android.graphics.Color
-import android.graphics.Path
-import android.util.Log
 import android.view.animation.AnimationUtils
-import android.view.animation.Interpolator
 import android.view.animation.LinearInterpolator
-import androidx.core.graphics.PathParser
-import com.suenara.customvectordrawable.DimensionConverter
-import com.suenara.customvectordrawable.attributeIndices
-import com.suenara.customvectordrawable.dimensionValue
-import com.suenara.customvectordrawable.parseColorInt
+import com.suenara.customvectordrawable.internal.attributeIndices
+import com.suenara.customvectordrawable.internal.dimensionValue
+import com.suenara.customvectordrawable.internal.parseColorInt
 
 internal sealed class AnimatorAttribute<T>(private val tag: String, private val defaultValue: T) {
 

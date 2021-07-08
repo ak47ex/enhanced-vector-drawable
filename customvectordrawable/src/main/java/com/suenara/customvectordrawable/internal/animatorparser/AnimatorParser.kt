@@ -1,4 +1,4 @@
-package com.suenara.animatedcustomvectordrawable
+package com.suenara.customvectordrawable.internal.animatorparser
 
 import android.animation.*
 import android.content.Context
@@ -6,16 +6,13 @@ import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.graphics.Path
 import android.graphics.PathMeasure
-import android.util.Log
-import android.util.Xml
 import android.view.InflateException
 import androidx.core.graphics.PathParser
-import androidx.vectordrawable.graphics.drawable.AnimatorInflaterCompat
-import com.suenara.customvectordrawable.CachedParser
-import com.suenara.customvectordrawable.attributeIndices
+import com.suenara.customvectordrawable.internal.CachedParser
+import com.suenara.customvectordrawable.internal.attributeIndices
 import org.xmlpull.v1.XmlPullParser
 
-class AnimatorParser(private val context: Context) {
+internal class AnimatorParser(private val context: Context) {
     private val resources: Resources = context.resources
 
     fun read(resId: Int): Animator {

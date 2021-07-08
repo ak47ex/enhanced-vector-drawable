@@ -1,12 +1,12 @@
-package com.suenara.customvectordrawable.elementparser
+package com.suenara.customvectordrawable.internal.elementparser
 
 import android.content.res.XmlResourceParser
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
-import com.suenara.customvectordrawable.element.PathElement
-import com.suenara.customvectordrawable.floatAlphaToInt
-import com.suenara.customvectordrawable.parseColorInt
+import com.suenara.customvectordrawable.internal.element.PathElement
+import com.suenara.customvectordrawable.internal.floatAlphaToInt
+import com.suenara.customvectordrawable.internal.parseColorInt
 
 internal open class PathElementParser : ElementParser<PathElement>() {
 

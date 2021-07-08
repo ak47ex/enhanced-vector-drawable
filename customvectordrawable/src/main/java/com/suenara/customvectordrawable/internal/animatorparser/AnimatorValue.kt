@@ -1,4 +1,4 @@
-package com.suenara.animatedcustomvectordrawable
+package com.suenara.customvectordrawable.internal.animatorparser
 
 internal sealed class AnimatorValue<T>() {
     abstract val value: T

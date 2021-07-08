@@ -1,4 +1,4 @@
-package com.suenara.animatedcustomvectordrawable
+package com.suenara.customvectordrawable.internal
 
 import android.animation.Animator
 import android.animation.AnimatorInflater
@@ -6,17 +6,16 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.Resources
-import android.content.res.TypedArray
 import android.content.res.XmlResourceParser
 import android.util.ArrayMap
-import android.util.AttributeSet
 import androidx.annotation.XmlRes
 import com.suenara.customvectordrawable.CustomVectorDrawable
+import com.suenara.customvectordrawable.internal.animatorparser.AnimatorParser
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 
-class AnimatedVectorDrawableParser(private val context: Context, private val theme: Resources.Theme? = null) {
+internal class AnimatedVectorDrawableParser(private val context: Context, private val theme: Resources.Theme? = null) {
     private val resources: Resources = context.resources
 
     private fun readCustomVectorDrawable(parser: XmlResourceParser): CustomVectorDrawable {
@@ -51,7 +50,7 @@ class AnimatedVectorDrawableParser(private val context: Context, private val the
         val targetNameMap = ArrayMap<Animator, String>()
         try {
             var event = parser.eventType
-            var innerDepth = parser.depth
+            val innerDepth = parser.depth
 
             while(event != XmlPullParser.END_DOCUMENT && (parser.depth >= innerDepth || event != XmlPullParser.END_TAG)) {
                 if (event != XmlPullParser.START_TAG) {

@@ -1,4 +1,4 @@
-package com.suenara.animatedcustomvectordrawable
+package com.suenara.customvectordrawable.internal.animatorparser
 
 import android.animation.ArgbEvaluator
 import android.animation.PropertyValuesHolder
@@ -6,13 +6,11 @@ import android.animation.TypeEvaluator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.XmlResourceParser
-import android.util.Log
 import android.view.InflateException
 import androidx.core.graphics.PathParser
 import androidx.core.graphics.PathParser.PathDataNode
-import com.suenara.customvectordrawable.attributeIndices
 
-class PropertyValuesHolderParser(private val context: Context) {
+internal class PropertyValuesHolderParser(private val context: Context) {
     @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
     @SuppressLint("Recycle")
     fun read(parser: XmlResourceParser): PropertyValuesHolder? {

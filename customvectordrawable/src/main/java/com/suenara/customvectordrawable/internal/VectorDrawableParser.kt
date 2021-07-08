@@ -1,15 +1,15 @@
-package com.suenara.customvectordrawable
+package com.suenara.customvectordrawable.internal
 
 import android.content.res.Resources
 import androidx.annotation.XmlRes
-import com.suenara.customvectordrawable.element.ClipPathElement
-import com.suenara.customvectordrawable.element.GroupElement
-import com.suenara.customvectordrawable.element.PathElement
-import com.suenara.customvectordrawable.element.Shape
-import com.suenara.customvectordrawable.elementparser.ClipPathElementParser
-import com.suenara.customvectordrawable.elementparser.GroupElementParser
-import com.suenara.customvectordrawable.elementparser.PathElementParser
-import com.suenara.customvectordrawable.elementparser.VectorElementParser
+import com.suenara.customvectordrawable.internal.element.ClipPathElement
+import com.suenara.customvectordrawable.internal.element.GroupElement
+import com.suenara.customvectordrawable.internal.element.PathElement
+import com.suenara.customvectordrawable.internal.element.Shape
+import com.suenara.customvectordrawable.internal.elementparser.ClipPathElementParser
+import com.suenara.customvectordrawable.internal.elementparser.GroupElementParser
+import com.suenara.customvectordrawable.internal.elementparser.PathElementParser
+import com.suenara.customvectordrawable.internal.elementparser.VectorElementParser
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException

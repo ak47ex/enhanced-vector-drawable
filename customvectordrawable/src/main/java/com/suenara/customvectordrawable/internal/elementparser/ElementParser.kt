@@ -1,9 +1,9 @@
-package com.suenara.customvectordrawable.elementparser
+package com.suenara.customvectordrawable.internal.elementparser
 
 import android.content.res.XmlResourceParser
 import org.xmlpull.v1.XmlPullParser
 
-abstract class ElementParser<T> {
+internal abstract class ElementParser<T> {
 
     abstract fun read(parser: XmlResourceParser): T
 

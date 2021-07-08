@@ -1,7 +1,7 @@
-package com.suenara.customvectordrawable.elementparser
+package com.suenara.customvectordrawable.internal.elementparser
 
 import android.content.res.XmlResourceParser
-import com.suenara.customvectordrawable.element.ClipPathElement
+import com.suenara.customvectordrawable.internal.element.ClipPathElement
 
 internal class ClipPathElementParser : ElementParser<ClipPathElement>() {
     override fun read(parser: XmlResourceParser): ClipPathElement {

@@ -1,4 +1,4 @@
-package com.suenara.customvectordrawable.element
+package com.suenara.customvectordrawable.internal.element
 
 import android.graphics.Matrix
 import android.graphics.Path

@@ -1,25 +1,24 @@
-package com.suenara.animatedcustomvectordrawable
+package com.suenara.customvectordrawable
 
 import android.animation.Animator
 import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.*
 import android.graphics.drawable.Animatable
-import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.ArrayMap
 import android.util.Log
 import androidx.annotation.DrawableRes
-import com.suenara.customvectordrawable.CustomVectorDrawable
-import com.suenara.customvectordrawable.element.GroupElement
-import com.suenara.customvectordrawable.element.PathElement
+import com.suenara.customvectordrawable.internal.AnimatedVectorDrawableParser
+import com.suenara.customvectordrawable.internal.element.GroupElement
+import com.suenara.customvectordrawable.internal.element.PathElement
 
 @SuppressLint("ResourceType")
 class CustomAnimatedVectorDrawable
-constructor(private val context: Context, @DrawableRes private val resId: Int) : Drawable(), Animatable {
+constructor(context: Context, @DrawableRes private val resId: Int) : Drawable(), Animatable {
 
     private val shouldIgnoreInvalidAnim = true
 
@@ -68,6 +67,7 @@ constructor(private val context: Context, @DrawableRes private val resId: Int) :
             }
         }
     }
+
     private fun prepareLocalAnimator(index: Int): Animator {
         val animator = animators[index]
         val localAnimator = animator.clone()
@@ -96,12 +96,32 @@ constructor(private val context: Context, @DrawableRes private val resId: Int) :
         drawable.draw(canvas)
     }
 
+    override fun getAlpha(): Int {
+        return drawable.alpha
+    }
+
     override fun setAlpha(alpha: Int) {
-        TODO("Not yet implemented")
+        drawable.alpha = alpha
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
-        TODO("Not yet implemented")
+        drawable.colorFilter = colorFilter
+    }
+
+    override fun getColorFilter(): ColorFilter? {
+        return drawable.colorFilter
+    }
+
+    override fun setTintList(tint: ColorStateList?) {
+        drawable.setTintList(tint)
+    }
+
+    override fun setTintMode(tintMode: PorterDuff.Mode?) {
+        drawable.setTintMode(tintMode)
+    }
+
+    override fun jumpToCurrentState() {
+        animator.end()
     }
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
@@ -110,6 +130,32 @@ constructor(private val context: Context, @DrawableRes private val resId: Int) :
         super.onBoundsChange(bounds)
         drawable.bounds = bounds
     }
+
+    override fun onStateChange(state: IntArray): Boolean {
+        return drawable.setState(state)
+    }
+
+    override fun setVisible(visible: Boolean, restart: Boolean): Boolean {
+        if (animator.isInfinite() && animator.isStarted()) {
+            if (visible) {
+                animator.resume()
+            } else {
+                animator.pause()
+            }
+        }
+        drawable.setVisible(visible, restart)
+        return super.setVisible(visible, restart)
+    }
+
+    override fun getDirtyBounds(): Rect = drawable.dirtyBounds
+
+    override fun getIntrinsicWidth(): Int = drawable.intrinsicWidth
+
+    override fun getIntrinsicHeight(): Int = drawable.intrinsicHeight
+
+    override fun getMinimumWidth(): Int = drawable.minimumWidth
+
+    override fun getMinimumHeight(): Int = drawable.minimumHeight
 
     //endregion
 
@@ -125,6 +171,13 @@ constructor(private val context: Context, @DrawableRes private val resId: Int) :
     override fun isRunning(): Boolean = animator.isRunning()
 
     //endregion
+
+    inline fun changeAnimations(targetName: String, action: (Animator) -> Unit) {
+        findAnimations(targetName)?.let {
+            action(it)
+            invalidateAnimations()
+        }
+    }
 
     fun findAnimations(targetName: String): Animator? {
         return targetNameMap.values.indexOf(targetName).takeIf { it >= 0 }?.let {

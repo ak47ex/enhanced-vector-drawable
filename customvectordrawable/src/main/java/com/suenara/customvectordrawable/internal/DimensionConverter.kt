@@ -1,14 +1,13 @@
-package com.suenara.customvectordrawable
+package com.suenara.customvectordrawable.internal
 
 import android.content.Context
 import android.util.DisplayMetrics
-import android.util.Log
 import android.util.TypedValue
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
-object DimensionConverter {
+internal object DimensionConverter {
     // -- Initialize dimension string to constant lookup.
     private val dimensionConstantLookup: Map<String, Int> = HashMap<String, Int>().also { m ->
         m["px"] = TypedValue.COMPLEX_UNIT_PX
