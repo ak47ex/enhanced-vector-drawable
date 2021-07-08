@@ -33,4 +33,10 @@ internal class ElementHolderImpl : ElementHolder {
 
     override fun findPath(name: String): PathElement? =
         pathElements.find { it.name == name } ?: groupElements.firstNotNullOfOrNull { it.findPath(name) }
+
+    override fun findGroup(name: String): GroupElement? =
+        groupElements.find { it.name == name } ?: groupElements.firstNotNullOfOrNull { it.findGroup(name) }
+
+    override fun findClipPath(name: String): ClipPathElement? =
+        clipPathElements.find { it.name == name } ?: groupElements.firstNotNullOfOrNull { it.findClipPath(name) }
 }

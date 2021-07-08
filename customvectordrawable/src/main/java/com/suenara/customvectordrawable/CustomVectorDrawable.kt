@@ -12,7 +12,7 @@ import com.suenara.customvectordrawable.element.Shape
 
 class CustomVectorDrawable
 @Throws(Resources.NotFoundException::class)
-private constructor(private val resources: Resources, @DrawableRes private val resId: Int) : Drawable() {
+constructor(private val resources: Resources, @DrawableRes private val resId: Int) : Drawable() {
 
     private val shape: Shape
     private var left: Int = 0
@@ -27,6 +27,7 @@ private constructor(private val resources: Resources, @DrawableRes private val r
         shape = if (resId != 0) buildShape(resId) else Shape.EMPTY
         setBounds(0, 0, dp(shape.width), dp(shape.height))
     }
+
     constructor(context: Context, resId: Int) : this(context.resources, resId)
 
     override fun draw(canvas: Canvas) {
@@ -72,14 +73,44 @@ private constructor(private val resources: Resources, @DrawableRes private val r
     override fun getIntrinsicWidth(): Int = dp(shape.width)
     override fun getIntrinsicHeight(): Int = dp(shape.height)
     override fun getConstantState(): ConstantState {
-        return object : ConstantState(){
+        return object : ConstantState() {
             override fun newDrawable(): Drawable = CustomVectorDrawable(resources, resId)
+
+            override fun newDrawable(res: Resources?): Drawable {
+                return res?.let { CustomVectorDrawable(it, resId) } ?: newDrawable()
+            }
 
             override fun getChangingConfigurations(): Int = 0
         }
     }
 
     fun findPath(name: String): Path? = shape.findPath(name)
+
+    internal fun findTarget(name: String): Target? {
+        return if (shape.name == name) {
+            shape
+        } else {
+            shape.findGroup(name) ?: shape.findPath(name) ?: shape.findClipPath(name)
+        }
+    }
+
+    fun getPixelSize(): Float {
+        if (
+            shape.width == 0f ||
+            shape.height == 0f ||
+            shape.viewportHeight == 0f ||
+            shape.viewportWidth == 0f
+        ) {
+            return 1f // fall back to 1:1 pixel mapping.
+        }
+        val intrinsicWidth = dp(shape.width)
+        val intrinsicHeight = dp(shape.height)
+        val viewportWidth = shape.viewportWidth
+        val viewportHeight = shape.viewportHeight
+        val scaleX = viewportWidth / intrinsicWidth
+        val scaleY = viewportHeight / intrinsicHeight
+        return minOf(scaleX, scaleY)
+    }
 
     @Throws(Resources.NotFoundException::class)
     private fun buildShape(resId: Int) = VectorDrawableParser(resources).readShape(resId)
@@ -106,7 +137,9 @@ private constructor(private val resources: Resources, @DrawableRes private val r
 
     private fun dp(value: Float): Int = (resources.displayMetrics.density * value).toInt()
 
-    interface Path {
+    interface Target
+
+    interface Path : Target {
         @get:ColorInt
         @setparam:ColorInt
         var fillColor: Int

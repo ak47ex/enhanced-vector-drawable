@@ -1,6 +1,7 @@
 package com.suenara.customvectordrawable.element
 
 import android.graphics.*
+import android.util.Log
 import androidx.annotation.ColorInt
 import androidx.core.graphics.PathParser
 import androidx.core.graphics.alpha
@@ -18,11 +19,32 @@ internal class PathElement(
     val strokeLineCap: Paint.Cap,
     val strokeLineJoin: Paint.Join,
     val strokeMiterLimit: Float,
-    val strokeWidth: Float,
-    val trimPathEnd: Float,
-    val trimPathOffset: Float,
-    val trimPathStart: Float
-): CustomVectorDrawable.Path {
+    strokeWidth: Float,
+    trimPathEnd: Float,
+    trimPathOffset: Float,
+    trimPathStart: Float
+): CustomVectorDrawable.Path, CustomVectorDrawable.Target {
+    var strokeWidth: Float = strokeWidth
+        set(value) {
+            field = value
+            updatePaint()
+        }
+
+    var trimPathEnd: Float = trimPathEnd
+        set(value) {
+            field = value
+            trimPath()
+        }
+    var trimPathOffset: Float = trimPathOffset
+        set(value) {
+            field = value
+            trimPath()
+        }
+    var trimPathStart: Float = trimPathStart
+        set(value) {
+            field = value
+            trimPath()
+        }
     override var fillColor: Int = fillColor
         set(value) {
             field = value
@@ -74,6 +96,12 @@ internal class PathElement(
         } else {
             canvas.drawPath(path, pathPaint)
         }
+    }
+
+    fun setPathData(pathData: Array<PathParser.PathDataNode>) {
+        path.reset()
+        PathParser.PathDataNode.nodesToPath(pathData, path)
+        path.transform(scaleMatrix)
     }
 
     private fun trimPath() {

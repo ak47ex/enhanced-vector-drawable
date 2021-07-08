@@ -1,6 +1,7 @@
 package com.suenara.customvectordrawable.element
 
 import android.graphics.Matrix
+import com.suenara.customvectordrawable.CustomVectorDrawable
 
 internal class GroupElement(
     val name: String?,
@@ -13,7 +14,7 @@ internal class GroupElement(
     val translateY: Float,
     var parent: GroupElement? = null,
     elementHolder: ElementHolder = ElementHolderImpl()
-) : ElementHolder by elementHolder {
+) : ElementHolder by elementHolder, CustomVectorDrawable.Target {
 
     private val scaleMatrix = Matrix()
     private val originalTransformMatrix = Matrix()

@@ -17,4 +17,6 @@ internal interface ElementHolder {
     fun draw(canvas: Canvas)
 
     fun findPath(name: String): PathElement?
+    fun findGroup(name: String): GroupElement?
+    fun findClipPath(name: String): ClipPathElement?
 }

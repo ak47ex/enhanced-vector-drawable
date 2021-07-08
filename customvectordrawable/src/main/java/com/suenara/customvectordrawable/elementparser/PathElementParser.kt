@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import com.suenara.customvectordrawable.element.PathElement
 import com.suenara.customvectordrawable.floatAlphaToInt
+import com.suenara.customvectordrawable.parseColorInt
 
 internal open class PathElementParser : ElementParser<PathElement>() {
 
@@ -53,26 +54,6 @@ internal open class PathElementParser : ElementParser<PathElement>() {
 
     private fun readLineJoin(parser: XmlResourceParser, attr: Attribute<Paint.Join>): Paint.Join =
         read(parser, attr) { it.parseLineJoin() }
-
-    private fun String.parseColorInt(): Int {
-        return when (length) {
-            2 -> {
-                Color.parseColor(buildString {
-                    append('#')
-                    repeat(8) { append(get(1)) }
-                })
-            }
-            4 -> {
-                Color.parseColor(buildString {
-                    append('#')
-                    append(get(1)); append(get(1)); append(get(2)); append(get(2)); append(get(3)); append(get(3))
-                })
-            }
-            7 -> Color.parseColor(this)
-            9 -> Color.parseColor(this)
-            else -> Color.TRANSPARENT
-        }
-    }
 
     private fun String.parseFillType(): Path.FillType = when (this) {
         "1" -> Path.FillType.EVEN_ODD

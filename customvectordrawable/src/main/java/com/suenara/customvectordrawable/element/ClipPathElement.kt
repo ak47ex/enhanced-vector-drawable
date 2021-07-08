@@ -2,11 +2,12 @@ package com.suenara.customvectordrawable.element
 
 import android.graphics.*
 import androidx.core.graphics.PathParser
+import com.suenara.customvectordrawable.CustomVectorDrawable
 
 internal class ClipPathElement(
     val name: String?,
     pathData: String?
-) {
+) : CustomVectorDrawable.Target {
     val path by lazy { Path(originalPath) }
 
     private val originalPath = PathParser.createPathFromPathData(pathData) ?: Path()
