@@ -47,7 +47,7 @@ internal sealed class AnimatorAttribute<T>(private val tag: String, private val 
                 is AnimatorValue.FloatNumber -> AnimatorValue.FloatNumber(parser.floatAt(index, context))
                 is AnimatorValue.IntNumber -> AnimatorValue.IntNumber(parser.intAt(index))
                 is AnimatorValue.Path -> AnimatorValue.Path(parser.getAttributeValue(index))
-                AnimatorValue.Undefined -> TODO()
+                AnimatorValue.Undefined -> throw IllegalStateException("Undefined valueFrom type")
                 null -> throw IllegalStateException()
             }
         }
@@ -60,7 +60,7 @@ internal sealed class AnimatorAttribute<T>(private val tag: String, private val 
                 is AnimatorValue.FloatNumber -> AnimatorValue.FloatNumber(parser.floatAt(index, context))
                 is AnimatorValue.IntNumber -> AnimatorValue.IntNumber(parser.intAt(index))
                 is AnimatorValue.Path -> AnimatorValue.Path(parser.getAttributeValue(index))
-                AnimatorValue.Undefined -> TODO()
+                AnimatorValue.Undefined -> throw IllegalStateException("Undefined valueTo type")
                 null -> throw IllegalStateException()
             }
         }

@@ -6,7 +6,6 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.util.Log
-import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.graphics.withTranslation
 import com.suenara.customvectordrawable.internal.element.Shape
@@ -14,7 +13,7 @@ import com.suenara.customvectordrawable.internal.VectorDrawableParser
 
 class CustomVectorDrawable
 @Throws(Resources.NotFoundException::class)
-constructor(private val resources: Resources, @DrawableRes private val resId: Int) : Drawable() {
+constructor(private val resources: Resources, @DrawableRes private val resId: Int) : Drawable(), VectorPathContainer {
 
     private val shape: Shape
     private var left: Int = 0
@@ -86,9 +85,9 @@ constructor(private val resources: Resources, @DrawableRes private val resId: In
         }
     }
 
-    fun findPath(name: String): Path? = shape.findPath(name)
+    override fun findPath(name: String): VectorPath? = shape.findPath(name)
 
-    internal fun findTarget(name: String): Target? {
+    internal fun findTarget(name: String): AnimationTarget? {
         return if (shape.name == name) {
             shape
         } else {
@@ -138,18 +137,6 @@ constructor(private val resources: Resources, @DrawableRes private val resId: In
     }
 
     private fun dp(value: Float): Int = (resources.displayMetrics.density * value).toInt()
-
-    interface Target
-
-    interface Path : Target {
-        @get:ColorInt
-        @setparam:ColorInt
-        var fillColor: Int
-
-        @get:ColorInt
-        @setparam:ColorInt
-        var strokeColor: Int
-    }
 
     companion object {
         private val TAG = javaClass.simpleName

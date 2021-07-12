@@ -2,8 +2,10 @@ package com.suenara.customvectordrawable.internal.element
 
 import android.graphics.Matrix
 import android.graphics.Path
-import com.suenara.customvectordrawable.CustomVectorDrawable
+import androidx.annotation.Keep
+import com.suenara.customvectordrawable.AnimationTarget
 
+@Keep
 internal class Shape(
     val name: String?,
     val viewportWidth: Float,
@@ -12,7 +14,7 @@ internal class Shape(
     val width: Float,
     val height: Float,
     elementHolder: ElementHolder = ElementHolderImpl()
-) : ElementHolder by elementHolder, CustomVectorDrawable.Target {
+) : ElementHolder by elementHolder, AnimationTarget {
     private val fullPath: Path = Path()
     private val scaleMatrix: Matrix = Matrix()
 

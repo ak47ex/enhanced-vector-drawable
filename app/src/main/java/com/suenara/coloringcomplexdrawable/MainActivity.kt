@@ -14,6 +14,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.suenara.customvectordrawable.CustomAnimatedVectorDrawable
 import com.suenara.customvectordrawable.CustomVectorDrawable
+import com.suenara.customvectordrawable.changeAnimations
 import java.util.*
 
 class MainActivity : AppCompatActivity() {

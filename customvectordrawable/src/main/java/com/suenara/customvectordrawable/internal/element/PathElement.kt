@@ -2,17 +2,21 @@ package com.suenara.customvectordrawable.internal.element
 
 import android.graphics.*
 import androidx.annotation.ColorInt
+import androidx.annotation.Keep
 import androidx.core.graphics.PathParser
 import androidx.core.graphics.alpha
-import com.suenara.customvectordrawable.CustomVectorDrawable
+import com.suenara.customvectordrawable.AnimationTarget
+import com.suenara.customvectordrawable.VectorPath
+import com.suenara.customvectordrawable.internal.floatAlphaToInt
 
+@Keep
 internal class PathElement(
     val name: String?,
     private var fillAlpha: Int,
     @ColorInt fillColor: Int,
     val fillType: Path.FillType,
     val pathData: String?,
-    var strokeAlpha: Int,
+    strokeAlpha: Int,
     @ColorInt strokeColor: Int,
     val strokeLineCap: Paint.Cap,
     val strokeLineJoin: Paint.Join,
@@ -21,8 +25,8 @@ internal class PathElement(
     trimPathEnd: Float,
     trimPathOffset: Float,
     trimPathStart: Float
-): CustomVectorDrawable.Path, CustomVectorDrawable.Target {
-    var strokeWidth: Float = strokeWidth
+) : VectorPath, AnimationTarget {
+    override var strokeWidth: Float = strokeWidth
         set(value) {
             field = value
             updatePaint()
@@ -31,17 +35,17 @@ internal class PathElement(
     var trimPathEnd: Float = trimPathEnd
         set(value) {
             field = value
-            trimPath()
+            updatePath()
         }
     var trimPathOffset: Float = trimPathOffset
         set(value) {
             field = value
-            trimPath()
+            updatePath()
         }
     var trimPathStart: Float = trimPathStart
         set(value) {
             field = value
-            trimPath()
+            updatePath()
         }
     override var fillColor: Int = fillColor
         set(value) {
@@ -55,7 +59,11 @@ internal class PathElement(
             strokeAlpha = value.alpha
             updatePaint()
         }
-
+    override var strokeAlpha: Int = strokeAlpha
+        set(value) {
+            field = value
+            updatePaint()
+        }
 
     var isFillAndStroke: Boolean = false
         private set
@@ -71,13 +79,15 @@ internal class PathElement(
     private val trimmedPath: Path = Path(path)
     private var strokeRatio: Float = 1f
 
+    private var pathDataNodes: Array<PathParser.PathDataNode>? = null
+
     init {
         updatePaint()
     }
 
     fun transform(matrix: Matrix) {
         scaleMatrix.set(matrix)
-        trimPath()
+        updatePath()
     }
 
     fun setStrokeRatio(ratio: Float) {
@@ -97,9 +107,23 @@ internal class PathElement(
     }
 
     fun setPathData(pathData: Array<PathParser.PathDataNode>) {
-        path.reset()
-        PathParser.PathDataNode.nodesToPath(pathData, path)
-        path.transform(scaleMatrix)
+        pathDataNodes = PathParser.deepCopyNodes(pathData)
+        updatePath()
+    }
+
+    fun setStrokeAlpha(alpha: Float) {
+        strokeAlpha = floatAlphaToInt(alpha)
+    }
+
+    private fun updatePath() {
+        val pathData = pathDataNodes
+        if (pathData != null) {
+            path.reset()
+            PathParser.PathDataNode.nodesToPath(pathData, path)
+            path.transform(scaleMatrix)
+        } else {
+            trimPath()
+        }
     }
 
     private fun trimPath() {

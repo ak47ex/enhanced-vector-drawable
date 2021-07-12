@@ -18,7 +18,7 @@ import com.suenara.customvectordrawable.internal.element.PathElement
 
 @SuppressLint("ResourceType")
 class CustomAnimatedVectorDrawable
-constructor(context: Context, @DrawableRes private val resId: Int) : Drawable(), Animatable {
+constructor(context: Context, @DrawableRes private val resId: Int) : Drawable(), Animatable, VectorAnimationContainer {
 
     private val shouldIgnoreInvalidAnim = true
 
@@ -172,20 +172,13 @@ constructor(context: Context, @DrawableRes private val resId: Int) : Drawable(),
 
     //endregion
 
-    inline fun changeAnimations(targetName: String, action: (Animator) -> Unit) {
-        findAnimations(targetName)?.let {
-            action(it)
-            invalidateAnimations()
-        }
-    }
-
-    fun findAnimations(targetName: String): Animator? {
+    override fun findAnimations(targetName: String): Animator? {
         return targetNameMap.values.indexOf(targetName).takeIf { it >= 0 }?.let {
             targetNameMap.keyAt(it)
         }
     }
 
-    fun invalidateAnimations() {
+    override fun invalidateAnimations() {
         animatorSetFromXml = AnimatorSet().also {
             prepareLocalAnimators(it)
         }
@@ -193,7 +186,7 @@ constructor(context: Context, @DrawableRes private val resId: Int) : Drawable(),
         animator = CustomAnimatorSet(this, animatorSetFromXml)
     }
 
-    fun findPath(name: String): CustomVectorDrawable.Path? = drawable.findPath(name)
+    override fun findPath(name: String): VectorPath? = drawable.findPath(name)
 
     private class CustomAnimatorSet(private val drawable: Drawable, set: AnimatorSet) {
         private val animatorSet: AnimatorSet = set.clone()
