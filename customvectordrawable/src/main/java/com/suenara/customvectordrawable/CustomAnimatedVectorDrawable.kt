@@ -73,7 +73,6 @@ constructor(context: Context, @DrawableRes private val resId: Int) : Drawable(),
         val localAnimator = animator.clone()
         val targetName = targetNameMap[animator]
         val target = targetName?.let { drawable.findTarget(it) }
-
         if (shouldIgnoreInvalidAnim) {
             if (target == null) {
                 throw IllegalStateException(
@@ -193,7 +192,6 @@ constructor(context: Context, @DrawableRes private val resId: Int) : Drawable(),
         private val isInfinite = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             animatorSet.totalDuration == Animator.DURATION_INFINITE
         } else {
-            Log.w("zxc", "might be wrong!!!")
             animatorSet.duration == -1L
         }
 

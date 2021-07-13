@@ -22,10 +22,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        (getDrawable(R.drawable.animated_checkbox) as StateListDrawable).let { drawable ->
-            Log.d("zxc", "${drawable.isStateful}")
-        }
-
         val d = makeAnimated()
         findViewById<CheckBox>(R.id.custom_checkbox).buttonDrawable = d
         findViewById<ImageView>(R.id.check_on).setImageDrawable(getDrawable(R.drawable.vd_check_on))
@@ -68,6 +64,31 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }, 1500)
+            })
+
+        findViewById<ImageView>(R.id.animated_call).setImageDrawable(getDrawable(R.drawable.avd_call_in_progress).also {
+            Timer().scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    runOnUiThread {
+                        (it as Animatable).stop()
+                        (it as Animatable).start()
+                    }
+                }
+            }, 0, repeatTime)
+        })
+        findViewById<ImageView>(R.id.custom_animated_call).setImageDrawable(
+            CustomAnimatedVectorDrawable(
+                this,
+                R.drawable.avd_call_in_progress
+            ).also {
+                Timer().scheduleAtFixedRate(object : TimerTask() {
+                    override fun run() {
+                        runOnUiThread{
+                            it.stop()
+                            it.start()
+                        }
+                    }
+                }, 0, repeatTime)
             })
     }
 

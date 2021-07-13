@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.util.ArrayMap
+import android.util.Log
 import androidx.annotation.XmlRes
 import com.suenara.customvectordrawable.CustomVectorDrawable
 import com.suenara.customvectordrawable.internal.animatorparser.AnimatorParser
@@ -83,6 +84,8 @@ internal class AnimatedVectorDrawableParser(private val context: Context, privat
                                     animators.add(animator)
                                     targetNameMap[animator] = target
                                 }
+                            } else {
+                                Log.w(TAG, "unknown attribute '$attrName'. Skipping")
                             }
                         }
                     }
@@ -128,5 +131,7 @@ internal class AnimatedVectorDrawableParser(private val context: Context, privat
         private const val ANIMATION = "animation"
         private const val TARGET = "target"
         private const val PATH_DATA_PROPERTY_NAME = "pathData"
+
+        private val TAG = javaClass.simpleName
     }
 }

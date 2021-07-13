@@ -7,16 +7,52 @@ import com.suenara.customvectordrawable.AnimationTarget
 @Keep
 internal class GroupElement(
     val name: String?,
-    val pivotX: Float,
-    val pivotY: Float,
-    val rotation: Float,
-    val scaleX: Float,
-    val scaleY: Float,
-    val translateX: Float,
-    val translateY: Float,
+    pivotX: Float,
+    pivotY: Float,
+    rotation: Float,
+    scaleX: Float,
+    scaleY: Float,
+    translateX: Float,
+    translateY: Float,
     var parent: GroupElement? = null,
     elementHolder: ElementHolder = ElementHolderImpl()
 ) : ElementHolder by elementHolder, AnimationTarget {
+
+    var pivotX: Float = pivotX
+        set(value) {
+            field = value
+            buildTransformMatrix()
+        }
+    var pivotY: Float = pivotY
+        set(value) {
+            field = value
+            buildTransformMatrix()
+        }
+    var rotation: Float = rotation
+        set(value) {
+            field = value
+            buildTransformMatrix()
+        }
+    var scaleX: Float = scaleX
+        set(value) {
+            field = value
+            buildTransformMatrix()
+        }
+    var scaleY: Float = scaleY
+        set(value) {
+            field = value
+            buildTransformMatrix()
+        }
+    var translateX: Float = translateX
+        set(value) {
+            field = value
+            buildTransformMatrix()
+        }
+    var translateY: Float = translateY
+        set(value) {
+            field = value
+            buildTransformMatrix()
+        }
 
     private val scaleMatrix = Matrix()
     private val originalTransformMatrix = Matrix()
@@ -35,10 +71,15 @@ internal class GroupElement(
         }
 
         groupElements.forEach { it.buildTransformMatrix() }
+        invalidateTransforms()
     }
 
     fun scaleAllPaths(scaleMatrix: Matrix) {
         this.scaleMatrix.set(scaleMatrix)
+        invalidateTransforms()
+    }
+
+    private fun invalidateTransforms() {
         finalTransformMatrix.set(originalTransformMatrix)
         finalTransformMatrix.postConcat(scaleMatrix)
 
