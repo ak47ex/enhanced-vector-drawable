@@ -77,27 +77,19 @@ internal class AnimatorParser(private val context: Context) {
     }
 
     private fun readObjectAnimator(parser: XmlResourceParser): ObjectAnimator {
-        val animator = ObjectAnimator()
-        animator.interpolator = AnimatorAttribute.Interpolator.get(context, parser)
-        animator.duration = AnimatorAttribute.Duration.get(context, parser)
-        animator.startDelay = AnimatorAttribute.StartDelay.get(context, parser)
-        animator.repeatCount = AnimatorAttribute.RepeatCount.get(context, parser)
-        animator.repeatMode = AnimatorAttribute.RepeatMode.get(context, parser)
-        getPropertyValuesHolder(parser)?.let {
-            animator.setValues(it)
+        return ObjectAnimator().also { animator ->
+            animator.readAnimatorProperties(parser)
+            setupObjectAnimator(parser, animator)
         }
-        setupObjectAnimator(parser, animator)
-
-        return animator
     }
 
     private fun setupObjectAnimator(parser: XmlResourceParser, animator: ObjectAnimator, pixelSize: Float = 1f) {
-        val pathData = AnimatorAttribute.PathData.get(context, parser)
+        val pathData = AnimatorAttributeGetter.PathData.get(context, parser)
         if (pathData.isNotEmpty()) {
-            val propertyXName = AnimatorAttribute.PropertyXName.get(context, parser)
-            val propertyYName = AnimatorAttribute.PropertyYName.get(context, parser)
+            val propertyXName = AnimatorAttributeGetter.PropertyXName.get(context, parser)
+            val propertyYName = AnimatorAttributeGetter.PropertyYName.get(context, parser)
 
-            var valueType = AnimatorAttribute.ValueType.get(context, parser)
+            var valueType = AnimatorAttributeGetter.ValueType.get(context, parser)
             if (valueType is AnimatorValue.Path || valueType is AnimatorValue.Undefined) {
                 valueType = AnimatorValue.FloatNumber(0f)
             }
@@ -108,7 +100,7 @@ internal class AnimatorParser(private val context: Context) {
                 setupPathMotion(path, animator, 0.5f * pixelSize, propertyXName, propertyYName)
             }
         } else {
-            animator.setPropertyName(AnimatorAttribute.PropertyName.get(context, parser))
+            animator.setPropertyName(AnimatorAttributeGetter.PropertyName.get(context, parser))
         }
     }
 
@@ -161,12 +153,22 @@ internal class AnimatorParser(private val context: Context) {
         }
     }
 
-    private fun readAnimator(parser: XmlResourceParser): Animator = TODO()
+    private fun readAnimator(parser: XmlResourceParser): Animator {
+        return ValueAnimator().apply { readAnimatorProperties(parser) }
+    }
+
     private fun readAnimatorSet(parser: XmlResourceParser): AnimatorSet = AnimatorSet()
     private fun readPropertyValuesHolder(parser: XmlResourceParser): PropertyValuesHolder = TODO()
 
-    private fun readInterpolator(parser: XmlResourceParser) {
-
+    private fun ValueAnimator.readAnimatorProperties(parser: XmlResourceParser) {
+        interpolator = AnimatorAttributeGetter.Interpolator.get(context, parser)
+        duration = AnimatorAttributeGetter.Duration.get(context, parser)
+        startDelay = AnimatorAttributeGetter.StartDelay.get(context, parser)
+        repeatCount = AnimatorAttributeGetter.RepeatCount.get(context, parser)
+        repeatMode = AnimatorAttributeGetter.RepeatMode.get(context, parser)
+        getPropertyValuesHolder(parser)?.let {
+            setValues(it)
+        }
     }
 
     private fun getPropertyValuesHolder(parser: XmlResourceParser): PropertyValuesHolder? {

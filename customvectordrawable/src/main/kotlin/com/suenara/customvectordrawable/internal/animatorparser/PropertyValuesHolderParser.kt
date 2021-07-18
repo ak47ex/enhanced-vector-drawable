@@ -14,17 +14,14 @@ internal class PropertyValuesHolderParser(private val context: Context) {
     @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
     @SuppressLint("Recycle")
     fun read(parser: XmlResourceParser): PropertyValuesHolder? {
-        val propertyName = AnimatorAttribute.PropertyName.get(context, parser)
-        val from = AnimatorAttribute.ValueFrom.get(context, parser)
-        val to = AnimatorAttribute.ValueTo.get(context, parser)
+        val propertyName = AnimatorAttributeGetter.PropertyName.get(context, parser)
+        val from = AnimatorAttributeGetter.ValueFrom.get(context, parser)
+        val to = AnimatorAttributeGetter.ValueTo.get(context, parser)
 
-
-        var parsedValueType = AnimatorAttribute.ValueType.get(context, parser)
+        val parsedValueType = AnimatorAttributeGetter.ValueType.get(context, parser)
 
         val valueType = when {
-            parsedValueType is AnimatorValue.Undefined && (from is AnimatorValue.Color || to is AnimatorValue.Color) -> {
-                AnimatorValue.Color(0)
-            }
+            (from is AnimatorValue.Color || to is AnimatorValue.Color) -> AnimatorValue.Color(0)
             parsedValueType is AnimatorValue.Undefined -> AnimatorValue.FloatNumber(0f)
             else -> parsedValueType
         }

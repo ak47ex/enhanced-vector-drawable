@@ -3,24 +3,28 @@ package com.suenara.customvectordrawable.internal.animatorparser
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.XmlResourceParser
-import android.graphics.Color
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnimationUtils
-import android.view.animation.LinearInterpolator
 import com.suenara.customvectordrawable.internal.attributeIndices
 import com.suenara.customvectordrawable.internal.dimensionValue
 import com.suenara.customvectordrawable.internal.parseColorInt
 
-internal sealed class AnimatorAttribute<T>(private val tag: String, private val defaultValue: T) {
+internal sealed class AnimatorAttributeGetter<T>(
+    protected val attribute: AnimatorAttribute,
+    private val defaultValue: T
+) {
 
     abstract fun convert(context: Context, parser: XmlResourceParser, index: Int): T
 
     fun get(context: Context, parser: XmlResourceParser): T {
-        val index = parser.attributeIndices()[tag] ?: return defaultValue
+        val index = parser.attributeIndices()[attribute.tag] ?: return defaultValue
         return convert(context, parser, index)
     }
 
-    object Interpolator :
-        AnimatorAttribute<android.view.animation.Interpolator>("interpolator", LinearInterpolator()) {
+    object Interpolator : AnimatorAttributeGetter<android.view.animation.Interpolator>(
+        AnimatorAttribute.INTERPOLATOR,
+        AccelerateDecelerateInterpolator()
+    ) {
         override fun convert(
             context: Context,
             parser: XmlResourceParser,
@@ -35,80 +39,89 @@ internal sealed class AnimatorAttribute<T>(private val tag: String, private val 
         }
     }
 
-    object Duration : AnimatorAttribute<Long>("duration", 300L) {
+    object Duration : AnimatorAttributeGetter<Long>(AnimatorAttribute.DURATION, 300L) {
         override fun convert(context: Context, parser: XmlResourceParser, index: Int): Long =
             parser.getAttributeValue(index).toLongOrNull() ?: 0L
     }
 
-    object ValueFrom : AnimatorAttribute<AnimatorValue<*>?>("valueFrom", null) {
+    sealed class Value(attribute: AnimatorAttribute) :
+        AnimatorAttributeGetter<AnimatorValue<*>?>(attribute, null) {
         override fun convert(context: Context, parser: XmlResourceParser, index: Int): AnimatorValue<*> {
-            return when (ValueType.get(context, parser)) {
+            val valueType = ValueType.get(context, parser).let {
+                if (it !is AnimatorValue.Color  && parser.getAttributeValue(index).startsWith('#')) {
+                    AnimatorValue.Color(0)
+                } else {
+                    it
+                }
+            }
+            return when (valueType) {
                 is AnimatorValue.Color -> AnimatorValue.Color(parser.getAttributeValue(index).parseColorInt())
                 is AnimatorValue.FloatNumber -> AnimatorValue.FloatNumber(parser.floatAt(index, context))
                 is AnimatorValue.IntNumber -> AnimatorValue.IntNumber(parser.intAt(index))
                 is AnimatorValue.Path -> AnimatorValue.Path(parser.getAttributeValue(index))
-                AnimatorValue.Undefined -> throw IllegalStateException("Undefined valueFrom type")
+                AnimatorValue.Undefined -> throw IllegalStateException("Undefined ${attribute.tag} type")
                 null -> throw IllegalStateException()
             }
         }
     }
 
-    object ValueTo : AnimatorAttribute<AnimatorValue<*>?>("valueTo", null) {
-        override fun convert(context: Context, parser: XmlResourceParser, index: Int): AnimatorValue<*> {
-            return when (ValueType.get(context, parser)) {
-                is AnimatorValue.Color -> AnimatorValue.Color(parser.getAttributeValue(index).parseColorInt())
-                is AnimatorValue.FloatNumber -> AnimatorValue.FloatNumber(parser.floatAt(index, context))
-                is AnimatorValue.IntNumber -> AnimatorValue.IntNumber(parser.intAt(index))
-                is AnimatorValue.Path -> AnimatorValue.Path(parser.getAttributeValue(index))
-                AnimatorValue.Undefined -> throw IllegalStateException("Undefined valueTo type")
-                null -> throw IllegalStateException()
-            }
-        }
-    }
+    object ValueFrom : Value(AnimatorAttribute.VALUE_FROM)
+    object ValueTo : Value(AnimatorAttribute.VALUE_TO)
 
-    object ValueType : AnimatorAttribute<AnimatorValue<*>>("valueType", AnimatorValue.IntNumber(0)) {
+
+    object ValueType : AnimatorAttributeGetter<AnimatorValue<*>>(
+        AnimatorAttribute.VALUE_TYPE,
+        AnimatorValue.FloatNumber(0f)
+    ) {
         override fun convert(context: Context, parser: XmlResourceParser, index: Int): AnimatorValue<*> {
-            return when (parser.intAt(index)) {
+            val value = listOf(AnimatorAttribute.VALUE_FROM, AnimatorAttribute.VALUE_TO).firstNotNullOfOrNull {
+                parser.attributeIndices()[it.tag]
+            }?.let {
+                parser.getAttributeValue(it)
+            }
+
+            val valueType = if (value?.startsWith('#') == true) 3 else parser.intAt(index)
+            return when (valueType) {
                 0 -> AnimatorValue.FloatNumber(0f)
                 1 -> AnimatorValue.IntNumber(0)
                 2 -> AnimatorValue.Path("")
-                3 -> AnimatorValue.Color(Color.MAGENTA)
+                3 -> AnimatorValue.Color(0)
                 4 -> AnimatorValue.Undefined
                 else -> throw IllegalStateException("unknown value type ${parser.getAttributeValue(index)}")
             }
         }
     }
 
-    object PropertyName : AnimatorAttribute<String>("propertyName", "") {
+    object PropertyName : AnimatorAttributeGetter<String>(AnimatorAttribute.PROPERTY_NAME, "") {
         override fun convert(context: Context, parser: XmlResourceParser, index: Int): String =
             parser.getAttributeValue(index)
     }
 
-    object PropertyXName : AnimatorAttribute<String>("propertyXName", "") {
+    object PropertyXName : AnimatorAttributeGetter<String>(AnimatorAttribute.PROPERTY_X_NAME, "") {
         override fun convert(context: Context, parser: XmlResourceParser, index: Int): String =
             parser.getAttributeValue(index)
     }
 
-    object PropertyYName : AnimatorAttribute<String>("propertyYName", "") {
+    object PropertyYName : AnimatorAttributeGetter<String>(AnimatorAttribute.PROPERTY_Y_NAME, "") {
         override fun convert(context: Context, parser: XmlResourceParser, index: Int): String =
             parser.getAttributeValue(index)
     }
 
-    object PathData : AnimatorAttribute<String>("pathData", "") {
+    object PathData : AnimatorAttributeGetter<String>(AnimatorAttribute.PATH_DATA, "") {
         override fun convert(context: Context, parser: XmlResourceParser, index: Int): String =
             parser.getAttributeValue(index)
     }
 
 
-    object StartDelay : AnimatorAttribute<Long>("startOffset", 0) {
+    object StartDelay : AnimatorAttributeGetter<Long>(AnimatorAttribute.START_OFFSET, 0) {
         override fun convert(context: Context, parser: XmlResourceParser, index: Int): Long = parser.longAt(index)
     }
 
-    object RepeatCount : AnimatorAttribute<Int>("repeatCount", 0) {
+    object RepeatCount : AnimatorAttributeGetter<Int>(AnimatorAttribute.REPEAT_COUNT, 0) {
         override fun convert(context: Context, parser: XmlResourceParser, index: Int): Int = parser.intAt(index)
     }
 
-    object RepeatMode : AnimatorAttribute<Int>("repeatMode", ValueAnimator.RESTART) {
+    object RepeatMode : AnimatorAttributeGetter<Int>(AnimatorAttribute.REPEAT_MODE, ValueAnimator.RESTART) {
         override fun convert(context: Context, parser: XmlResourceParser, index: Int): Int = parser.intAt(index)
     }
 
@@ -116,4 +129,19 @@ internal sealed class AnimatorAttribute<T>(private val tag: String, private val 
     protected fun XmlResourceParser.longAt(index: Int): Long = getAttributeValue(index).toLong()
     protected fun XmlResourceParser.floatAt(index: Int, context: Context): Float =
         dimensionValue(context, getAttributeValue(index))
+
+    private enum class AnimatorAttribute(val tag: String) {
+        INTERPOLATOR("interpolator"),
+        DURATION("duration"),
+        VALUE_FROM("valueFrom"),
+        VALUE_TO("valueTo"),
+        VALUE_TYPE("valueType"),
+        PROPERTY_NAME("propertyName"),
+        PROPERTY_X_NAME("propertyXName"),
+        PROPERTY_Y_NAME("propertyYName"),
+        PATH_DATA("pathData"),
+        START_OFFSET("startOffset"),
+        REPEAT_COUNT("repeatCount"),
+        REPEAT_MODE("repeatMode")
+    }
 }
