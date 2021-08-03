@@ -7,14 +7,13 @@ import android.graphics.drawable.Animatable
 import android.graphics.drawable.AnimatedStateListDrawable
 import android.graphics.drawable.StateListDrawable
 import android.os.Bundle
-import android.util.Log
 import android.util.StateSet
 import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import com.suenara.customvectordrawable.CustomAnimatedVectorDrawable
-import com.suenara.customvectordrawable.CustomVectorDrawable
-import com.suenara.customvectordrawable.changeAnimations
+import com.suenara.enhancedvectordrawable.EnhancedAnimatedVectorDrawable
+import com.suenara.enhancedvectordrawable.EnhancedVectorDrawable
+import com.suenara.enhancedvectordrawable.changeAnimations
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -28,13 +27,13 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.check_off).setImageDrawable(getDrawable(R.drawable.vd_check_off))
 
         findViewById<ImageView>(R.id.custom_check_on).setImageDrawable(
-            CustomVectorDrawable(
+            EnhancedVectorDrawable(
                 this,
                 R.drawable.vd_check_on
             )
         )
         findViewById<ImageView>(R.id.custom_check_off).setImageDrawable(
-            CustomVectorDrawable(
+            EnhancedVectorDrawable(
                 this,
                 R.drawable.vd_check_off
             )
@@ -53,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             }, 0, repeatTime)
         })
         findViewById<ImageView>(R.id.custom_animated_check_on).setImageDrawable(
-            CustomAnimatedVectorDrawable(
+            EnhancedAnimatedVectorDrawable(
                 this,
                 R.drawable.avd_check_off_to_on
             ).modifyColors().also {
@@ -77,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             }, 0, repeatTime)
         })
         findViewById<ImageView>(R.id.custom_animated_call).setImageDrawable(
-            CustomAnimatedVectorDrawable(
+            EnhancedAnimatedVectorDrawable(
                 this,
                 R.drawable.avd_call_in_progress
             ).also {
@@ -96,27 +95,27 @@ class MainActivity : AppCompatActivity() {
         val an = AnimatedStateListDrawable()
         an.addState(
             intArrayOf(android.R.attr.state_checked),
-            CustomVectorDrawable(this, R.drawable.vd_check_on)!!,
+            EnhancedVectorDrawable(this, R.drawable.vd_check_on)!!,
             R.drawable.vd_check_on
         )
-        an.addState(StateSet.NOTHING, CustomVectorDrawable(this, R.drawable.vd_check_off)!!, R.drawable.vd_check_off)
+        an.addState(StateSet.NOTHING, EnhancedVectorDrawable(this, R.drawable.vd_check_off)!!, R.drawable.vd_check_off)
         an.addTransition(
             R.drawable.vd_check_on,
             R.drawable.vd_check_off,
-            CustomAnimatedVectorDrawable(this, R.drawable.avd_check_on_to_off).modifyColors(),
+            EnhancedAnimatedVectorDrawable(this, R.drawable.avd_check_on_to_off).modifyColors(),
             false
         )
         an.addTransition(
             R.drawable.vd_check_off,
             R.drawable.vd_check_on,
-            CustomAnimatedVectorDrawable(this, R.drawable.avd_check_off_to_on).modifyColors(),
+            EnhancedAnimatedVectorDrawable(this, R.drawable.avd_check_off_to_on).modifyColors(),
             false
         )
         an.jumpToCurrentState()
         return an
     }
 
-    private fun CustomAnimatedVectorDrawable.modifyColors() = also {
+    private fun EnhancedAnimatedVectorDrawable.modifyColors() = also {
         it.changeAnimations("bg") { animator ->
             (animator as? AnimatorSet)?.childAnimations?.find { it is ObjectAnimator }?.cast<ObjectAnimator>()
                 ?.let { objAnim ->
