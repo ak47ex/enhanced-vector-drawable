@@ -6,40 +6,40 @@ import android.animation.ObjectAnimator
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
 
-fun EnhancedVectorDrawable.setStrokeColor(pathName: String, @ColorInt color: Int) {
+fun VectorPathContainer.setStrokeColor(pathName: String, @ColorInt color: Int) {
     findPath(pathName)?.run {
         strokeColor = color
-        invalidateSelf()
+        invalidatePath()
     }
 }
 
-fun EnhancedVectorDrawable.setFillColor(pathName: String, @ColorInt color: Int) {
+fun VectorPathContainer.setFillColor(pathName: String, @ColorInt color: Int) {
     findPath(pathName)?.run {
         fillColor = color
-        invalidateSelf()
+        invalidatePath()
     }
 }
 
-fun EnhancedVectorDrawable.setColor(pathName: String, @ColorInt color: Int) {
+fun VectorPathContainer.setColor(pathName: String, @ColorInt color: Int) {
     findPath(pathName)?.run {
         fillColor = color
         strokeColor = color
-        invalidateSelf()
+        invalidatePath()
     }
 }
 
 
-fun EnhancedVectorDrawable.setStrokeAlpha(pathName: String, @IntRange(from = 0, to = 255) alpha: Int) {
+fun VectorPathContainer.setStrokeAlpha(pathName: String, @IntRange(from = 0, to = 255) alpha: Int) {
     findPath(pathName)?.run {
         strokeAlpha = alpha
-        invalidateSelf()
+        invalidatePath()
     }
 }
 
-fun EnhancedVectorDrawable.setStrokeWidth(pathName: String, strokeWidth: Float) {
+fun VectorPathContainer.setStrokeWidth(pathName: String, strokeWidth: Float) {
     findPath(pathName)?.run {
         this.strokeWidth = strokeWidth
-        invalidateSelf()
+        invalidatePath()
     }
 }
 

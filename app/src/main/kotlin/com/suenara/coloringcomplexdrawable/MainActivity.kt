@@ -11,9 +11,7 @@ import android.util.StateSet
 import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import com.suenara.enhancedvectordrawable.EnhancedAnimatedVectorDrawable
-import com.suenara.enhancedvectordrawable.EnhancedVectorDrawable
-import com.suenara.enhancedvectordrawable.changeAnimations
+import com.suenara.enhancedvectordrawable.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -116,17 +114,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun EnhancedAnimatedVectorDrawable.modifyColors() = also {
-        it.changeAnimations("bg") { animator ->
-            (animator as? AnimatorSet)?.childAnimations?.find { it is ObjectAnimator }?.cast<ObjectAnimator>()
-                ?.let { objAnim ->
-                    objAnim.values.filter { pvh -> pvh.propertyName == "strokeColor" }.forEach { pvh ->
-                        pvh.setIntValues(Color.RED, Color.GREEN, Color.CYAN)
-                    }
-                }
-        }
-        it.findPath("fg")?.let { path ->
-            path.strokeColor = Color.BLACK
-        }
+        it.changeAnimations("bg", AnimationTarget.Property.STROKE_COLOR, Color.RED, Color.GREEN, Color.CYAN)
+        it.setStrokeColor("fg", Color.BLACK)
     }
 
     inline fun <reified T> Any.cast(): T = this as T

@@ -15,7 +15,7 @@ interface AnimationTarget {
             setIntValues(*(it as Array<Int>).toIntArray())
         }),
         STROKE_COLOR("strokeColor", {
-            setFloatValues(*(it as Array<Float>).toFloatArray())
+            setIntValues(*(it as Array<Int>).toIntArray())
         }),
         STROKE_WIDTH("strokeWidth", {
             setFloatValues(*(it as Array<Float>).toFloatArray())

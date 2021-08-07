@@ -99,6 +99,8 @@ constructor(private val resources: Resources, @DrawableRes private val resId: In
 
     override fun findPath(name: String): VectorPath? = shape.findPath(name)
 
+    override fun invalidatePath() = invalidateSelf()
+
     internal fun findTarget(name: String): AnimationTarget? {
         return if (shape.name == name) {
             shape

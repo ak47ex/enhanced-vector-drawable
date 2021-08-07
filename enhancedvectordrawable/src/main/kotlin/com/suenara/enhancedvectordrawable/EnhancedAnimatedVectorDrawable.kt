@@ -216,6 +216,8 @@ constructor(context: Context, @DrawableRes private val resId: Int) : Drawable(),
 
     override fun findPath(name: String): VectorPath? = drawable.findPath(name)
 
+    override fun invalidatePath() = invalidateSelf()
+
     private class CustomAnimatorSet(private val drawable: Drawable, set: AnimatorSet) {
         private val animatorSet: AnimatorSet = set.clone()
         private val isInfinite = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
