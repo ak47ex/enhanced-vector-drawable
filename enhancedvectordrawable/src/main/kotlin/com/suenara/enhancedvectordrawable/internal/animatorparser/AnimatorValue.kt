@@ -9,5 +9,6 @@ internal sealed class AnimatorValue<T>() {
     data class Color(override val value: Int) : AnimatorValue<Int>()
     object Undefined : AnimatorValue<Nothing>() {
         override val value: Nothing get() = throw IllegalStateException()
+        override fun toString(): String = "Undefined"
     }
 }

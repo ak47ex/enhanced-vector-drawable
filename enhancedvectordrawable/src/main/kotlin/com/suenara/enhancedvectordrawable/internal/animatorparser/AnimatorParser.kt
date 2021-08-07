@@ -3,14 +3,19 @@ package com.suenara.enhancedvectordrawable.internal.animatorparser
 import android.animation.*
 import android.content.Context
 import android.content.res.Resources
+import android.content.res.TypedArray
 import android.content.res.XmlResourceParser
 import android.graphics.Path
 import android.graphics.PathMeasure
+import android.util.Xml
 import android.view.InflateException
 import androidx.core.graphics.PathParser
+import androidx.vectordrawable.graphics.drawable.AnimatorInflaterCompat
 import com.suenara.enhancedvectordrawable.internal.CachedParser
 import com.suenara.enhancedvectordrawable.internal.attributeIndices
 import org.xmlpull.v1.XmlPullParser
+import java.util.*
+import kotlin.collections.ArrayList
 
 internal class AnimatorParser(private val context: Context) {
     private val resources: Resources = context.resources
@@ -31,14 +36,14 @@ internal class AnimatorParser(private val context: Context) {
         var anim: Animator? = null
         var gotValues = false
         parser.next()
+        var valueType: AnimatorValue<*> = AnimatorValue.Undefined
         while ((event != XmlPullParser.END_TAG || parser.depth > depth) && event != XmlPullParser.END_DOCUMENT) {
             if (event != XmlPullParser.START_TAG) {
                 event = parser.next()
                 continue
             }
 
-            val name = parser.name
-            when (name) {
+            when (parser.name) {
                 OBJECT_ANIMATOR -> {
                     anim = readObjectAnimator(CachedParser(parser))
                 }
@@ -53,10 +58,13 @@ internal class AnimatorParser(private val context: Context) {
                     parseAnimator(parser, anim, ordering)
                 }
                 PROPERTY_VALUES_HOLDER -> {
-                    readPropertyValuesHolder(parser)
+                    readPropertyValuesHolder(parser, valueType).takeIf { it.isNotEmpty() }?.let {
+                        (anim as? ValueAnimator)?.setValues(*it.toTypedArray())
+                    }
                     gotValues = true
                 }
             }
+            valueType = getValueType(parser)
 
             if (parent != null && !gotValues) {
                 if (childAnims == null) {
@@ -158,7 +166,32 @@ internal class AnimatorParser(private val context: Context) {
     }
 
     private fun readAnimatorSet(parser: XmlResourceParser): AnimatorSet = AnimatorSet()
-    private fun readPropertyValuesHolder(parser: XmlResourceParser): PropertyValuesHolder = TODO()
+    private fun readPropertyValuesHolder(parser: XmlResourceParser, valueType: AnimatorValue<*>): List<PropertyValuesHolder> {
+        val pvhParser = PropertyValuesHolderParser(context)
+        val values = mutableListOf<PropertyValuesHolder>()
+        var type = parser.eventType
+        while (type != XmlPullParser.END_TAG && type != XmlPullParser.END_DOCUMENT) {
+            if (type != XmlPullParser.START_TAG) {
+                parser.next()
+                continue
+            }
+
+            val name = parser.name
+
+            if (name == PROPERTY_VALUES_HOLDER) {
+                var pvh = pvhParser.readKeyframes(parser, valueType)
+                if (pvh == null) {
+                    pvh = pvhParser.read(parser, valueType)
+                }
+                if (pvh != null) {
+                    values.add(pvh)
+                }
+            }
+            parser.next()
+            type = parser.eventType
+        }
+        return values
+    }
 
     private fun ValueAnimator.readAnimatorProperties(parser: XmlResourceParser) {
         interpolator = AnimatorAttributeGetter.Interpolator.get(context, parser)
@@ -166,13 +199,27 @@ internal class AnimatorParser(private val context: Context) {
         startDelay = AnimatorAttributeGetter.StartDelay.get(context, parser)
         repeatCount = AnimatorAttributeGetter.RepeatCount.get(context, parser)
         repeatMode = AnimatorAttributeGetter.RepeatMode.get(context, parser)
-        getPropertyValuesHolder(parser)?.let {
+        getPropertyValuesHolder(parser, getValueType(parser))?.let {
             setValues(it)
         }
     }
 
-    private fun getPropertyValuesHolder(parser: XmlResourceParser): PropertyValuesHolder? {
-        return PropertyValuesHolderParser(context).read(parser)
+    private fun getPropertyValuesHolder(parser: XmlResourceParser, valueType: AnimatorValue<*>): PropertyValuesHolder? {
+        return PropertyValuesHolderParser(context).read(parser, valueType)
+    }
+
+    private fun getValueType(parser: XmlResourceParser): AnimatorValue<*> {
+        val from = AnimatorAttributeGetter.ValueFrom.get(context, parser)
+        val to = AnimatorAttributeGetter.ValueTo.get(context, parser)
+
+        val parsedValueType = AnimatorAttributeGetter.ValueType.get(context, parser)
+
+        return when {
+            (from is AnimatorValue.Color || to is AnimatorValue.Color) -> AnimatorValue.Color(0)
+            from == null && to == null -> AnimatorValue.Undefined
+            parsedValueType is AnimatorValue.Undefined -> AnimatorValue.FloatNumber(0f)
+            else -> parsedValueType
+        }
     }
 
     companion object {

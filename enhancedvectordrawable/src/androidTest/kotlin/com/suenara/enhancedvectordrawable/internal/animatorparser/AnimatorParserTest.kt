@@ -17,7 +17,8 @@ class AnimatorParserTest {
         listOf(
             R.animator.simple_value_animator,
             R.animator.complete_value_animator,
-            R.animator.int_value_animator
+            R.animator.int_value_animator,
+            R.animator.simple_keyframe_animator
         ).test<ValueAnimator> { custom, actual ->
             assertThat(custom.animatedFraction).isEqualTo(actual.animatedFraction)
             assertThat(custom.animatedValue).isEqualTo(actual.animatedValue)
@@ -43,10 +44,21 @@ class AnimatorParserTest {
     }
 
     private inline fun <reified T : Animator> Iterable<Int>.test(assertions: (T, T) -> Unit) = forEach {
-        assertEquals(parser.read(it), AnimatorInflater.loadAnimator(ctx, it), assertions)
+        try {
+            assertEquals(parser.read(it), AnimatorInflater.loadAnimator(ctx, it), assertions)
+        } catch (t: Throwable) {
+            throw AssertionError(
+                "Failed on ${ctx.resources.getResourceName(it).substringAfter(':')} with exception ${t.javaClass.simpleName}",
+                t
+            )
+        }
     }
 
-    private inline fun <reified T : Animator> assertEquals(custom: Animator, actual: Animator, assertions: (T, T) -> Unit) {
+    private inline fun <reified T : Animator> assertEquals(
+        custom: Animator,
+        actual: Animator,
+        assertions: (T, T) -> Unit
+    ) {
         assertThat(custom).isInstanceOf(T::class.java)
         assertThat(actual).isInstanceOf(T::class.java)
         assertAnimatorValuesEqual(custom, actual)
