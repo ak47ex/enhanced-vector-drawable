@@ -2,11 +2,23 @@ package com.suenara.enhancedvectordrawable.internal.element
 
 import android.graphics.Canvas
 
-internal class ElementHolderImpl : ElementHolder {
+internal class ElementHolderImpl() : ElementHolder {
 
     override val groupElements = mutableListOf<GroupElement>()
     override val pathElements = mutableListOf<PathElement>()
     override val clipPathElements = mutableListOf<ClipPathElement>()
+
+    constructor(prototype: ElementHolder) : this() {
+        prototype.groupElements.forEach {
+            groupElements.add(GroupElement(it))
+        }
+        prototype.pathElements.forEach {
+            pathElements.add(PathElement(it))
+        }
+        prototype.clipPathElements.forEach {
+            clipPathElements.add(ClipPathElement(it))
+        }
+    }
 
     override fun addGroup(element: GroupElement) {
         groupElements.add(element)

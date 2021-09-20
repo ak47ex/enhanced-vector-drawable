@@ -16,10 +16,10 @@ import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 
-internal class AnimatedVectorDrawableParser(private val context: Context, private val theme: Resources.Theme? = null) {
+internal class EnhancedVectorDrawableParser(private val context: Context, private val theme: Resources.Theme? = null) {
     private val resources: Resources = context.resources
 
-    private fun readCustomVectorDrawable(parser: XmlResourceParser): EnhancedVectorDrawable {
+    private fun readEnhancedVectorDrawable(parser: XmlResourceParser): EnhancedVectorDrawable {
         for (attrIndex in 0 until parser.attributeCount) {
             if (parser.getAttributeName(attrIndex) == DRAWABLE) {
                 val drawableRes = parser.getAttributeResourceValue(attrIndex, 0)
@@ -34,6 +34,11 @@ internal class AnimatedVectorDrawableParser(private val context: Context, privat
     }
 
     fun read(@XmlRes resId: Int): ParsedResource {
+        val cached = tryRetrieveFromCache(resId)
+        if (cached != null) {
+            return cached
+        }
+
         val parser = resources.getXml(resId)
 
         var type: Int = parser.next()
@@ -61,7 +66,7 @@ internal class AnimatedVectorDrawableParser(private val context: Context, privat
 
                 when(parser.name) {
                     ANIMATED_VECTOR -> {
-                        cvd = readCustomVectorDrawable(parser).apply {
+                        cvd = readEnhancedVectorDrawable(parser).apply {
                             pathErrorScale = getPixelSize()
                         }
                     }
@@ -101,7 +106,10 @@ internal class AnimatedVectorDrawableParser(private val context: Context, privat
         } finally {
             parser.close()
         }
-        return ParsedResource(requireNotNull(cvd) { "VectorDrawable was not found in XML" }, animators, targetNameMap)
+        val parsed = ParsedResource(requireNotNull(cvd) { "VectorDrawable was not found in XML" }, animators, targetNameMap)
+        PARSED_CACHE[resId] = parsed
+
+        return parsed
     }
 
     private fun shouldParseManually(animator: Animator): Boolean {
@@ -118,6 +126,25 @@ internal class AnimatedVectorDrawableParser(private val context: Context, privat
 
     private fun parseAnimator(resId: Int): Animator = AnimatorParser(context).read(resId)
 
+    private fun tryRetrieveFromCache(@XmlRes resId: Int): ParsedResource? {
+        return PARSED_CACHE[resId]?.let { cached ->
+            val animators = ArrayList<Animator>()
+            val targetNameMap = ArrayMap<Animator, String>()
+
+            cached.animators.forEach {
+                val key = it.clone()
+                animators.add(key)
+                targetNameMap[key] = cached.targetNameMap[it]
+            }
+
+            ParsedResource(
+                drawable = EnhancedVectorDrawable(cached.drawable),
+                animators = animators,
+                targetNameMap = targetNameMap
+            )
+        }
+    }
+
     data class ParsedResource(
         val drawable: EnhancedVectorDrawable,
         val animators: ArrayList<Animator>,
@@ -131,6 +158,8 @@ internal class AnimatedVectorDrawableParser(private val context: Context, privat
         private const val ANIMATION = "animation"
         private const val TARGET = "target"
         private const val PATH_DATA_PROPERTY_NAME = "pathData"
+
+        private val PARSED_CACHE = ResourceCache<ParsedResource>()
 
         private val TAG = javaClass.simpleName
     }

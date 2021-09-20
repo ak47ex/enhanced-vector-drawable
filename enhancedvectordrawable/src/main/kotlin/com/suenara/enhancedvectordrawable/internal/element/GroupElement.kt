@@ -58,6 +58,22 @@ internal class GroupElement(
     private val originalTransformMatrix = Matrix()
     private val finalTransformMatrix = Matrix()
 
+    constructor(prototype: GroupElement) : this(
+        prototype.name,
+        prototype.pivotX,
+        prototype.pivotY,
+        prototype.rotation,
+        prototype.scaleX,
+        prototype.scaleY,
+        prototype.translateX,
+        prototype.translateY,
+        prototype.parent?.let { GroupElement(it) },
+        ElementHolderImpl(prototype)
+    ) {
+        scaleMatrix.set(prototype.scaleMatrix)
+        originalTransformMatrix.set(prototype.originalTransformMatrix)
+        finalTransformMatrix.set(prototype.finalTransformMatrix)
+    }
 
     fun buildTransformMatrix() {
         originalTransformMatrix.run {

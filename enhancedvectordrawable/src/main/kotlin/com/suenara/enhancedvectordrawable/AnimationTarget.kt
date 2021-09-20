@@ -6,7 +6,7 @@ import androidx.annotation.Keep
 @Keep
 interface AnimationTarget {
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "unused")
     enum class Property(
         val tag: String,
         private val valueSetter: PropertyValuesHolder.(Array<out Any>) -> Unit

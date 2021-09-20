@@ -18,6 +18,19 @@ internal class Shape(
     private val fullPath: Path = Path()
     private val scaleMatrix: Matrix = Matrix()
 
+    constructor(prototype: Shape) : this(
+        prototype.name,
+        prototype.viewportWidth,
+        prototype.viewportHeight,
+        prototype.alpha,
+        prototype.width,
+        prototype.height,
+        ElementHolderImpl(prototype)
+    ) {
+        fullPath.set(prototype.fullPath)
+        scaleMatrix.set(prototype.scaleMatrix)
+    }
+
     fun appendToFullPath(path: Path) = fullPath.addPath(path)
 
     fun buildTransformMatrices() {

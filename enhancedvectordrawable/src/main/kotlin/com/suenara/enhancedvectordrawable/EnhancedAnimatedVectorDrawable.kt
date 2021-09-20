@@ -12,7 +12,7 @@ import android.os.Build
 import android.util.ArrayMap
 import androidx.annotation.DrawableRes
 import androidx.annotation.Keep
-import com.suenara.enhancedvectordrawable.internal.AnimatedVectorDrawableParser
+import com.suenara.enhancedvectordrawable.internal.EnhancedVectorDrawableParser
 import com.suenara.enhancedvectordrawable.internal.element.GroupElement
 import com.suenara.enhancedvectordrawable.internal.element.PathElement
 
@@ -51,7 +51,7 @@ constructor(context: Context, @DrawableRes private val resId: Int) : Drawable(),
     private var animator: CustomAnimatorSet
 
     init {
-        val result = AnimatedVectorDrawableParser(context).read(resId)
+        val result = EnhancedVectorDrawableParser(context).read(resId)
         result.drawable.callback = callback
         drawable = result.drawable
         animators = result.animators

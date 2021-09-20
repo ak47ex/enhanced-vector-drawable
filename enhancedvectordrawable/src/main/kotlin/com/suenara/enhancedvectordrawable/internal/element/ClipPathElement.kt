@@ -18,6 +18,12 @@ internal class ClipPathElement(
         xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
     }
 
+    constructor(prototype: ClipPathElement) : this(prototype.name, null) {
+        originalPath.set(prototype.originalPath)
+        path.set(prototype.path)
+        clipPaint.set(prototype.clipPaint)
+    }
+
     fun transform(matrix: Matrix) {
         path.set(originalPath)
         path.transform(matrix)

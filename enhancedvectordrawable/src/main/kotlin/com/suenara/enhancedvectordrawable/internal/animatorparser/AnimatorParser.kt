@@ -3,26 +3,29 @@ package com.suenara.enhancedvectordrawable.internal.animatorparser
 import android.animation.*
 import android.content.Context
 import android.content.res.Resources
-import android.content.res.TypedArray
 import android.content.res.XmlResourceParser
 import android.graphics.Path
 import android.graphics.PathMeasure
-import android.util.Xml
 import android.view.InflateException
 import androidx.core.graphics.PathParser
-import androidx.vectordrawable.graphics.drawable.AnimatorInflaterCompat
 import com.suenara.enhancedvectordrawable.internal.CachedParser
+import com.suenara.enhancedvectordrawable.internal.ResourceCache
 import com.suenara.enhancedvectordrawable.internal.attributeIndices
 import org.xmlpull.v1.XmlPullParser
-import java.util.*
-import kotlin.collections.ArrayList
 
 internal class AnimatorParser(private val context: Context) {
     private val resources: Resources = context.resources
 
     fun read(resId: Int): Animator {
+        val cached = ANIMATOR_CACHE[resId]
+        if (cached != null) {
+            return cached.clone()
+        }
+
         val parser = resources.getAnimation(resId)
-        return parseAnimator(parser)!!
+        val parsed = requireNotNull(parseAnimator(parser))
+        ANIMATOR_CACHE[resId] = parsed.clone()
+        return parsed
     }
 
     private fun parseAnimator(
@@ -233,5 +236,7 @@ internal class AnimatorParser(private val context: Context) {
         private const val ORDERING = "ordering"
 
         private const val PATH_DATA = "pathData"
+
+        private val ANIMATOR_CACHE = ResourceCache<Animator>()
     }
 }

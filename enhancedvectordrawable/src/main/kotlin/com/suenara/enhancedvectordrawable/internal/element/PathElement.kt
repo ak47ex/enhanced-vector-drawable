@@ -81,6 +81,32 @@ internal class PathElement(
 
     private var pathDataNodes: Array<PathParser.PathDataNode>? = null
 
+    constructor(prototype: PathElement) : this(
+        prototype.name,
+        prototype.fillAlpha,
+        prototype.fillColor,
+        prototype.fillType,
+        prototype.pathData,
+        prototype.strokeAlpha,
+        prototype.strokeColor,
+        prototype.strokeLineCap,
+        prototype.strokeLineJoin,
+        prototype.strokeMiterLimit,
+        prototype.strokeWidth,
+        prototype.trimPathEnd,
+        prototype.trimPathOffset,
+        prototype.trimPathStart
+    ) {
+        isFillAndStroke = prototype.isFillAndStroke
+        originalPath.set(prototype.originalPath)
+        path.set(prototype.path)
+        pathPaint.set(prototype.pathPaint)
+        scaleMatrix.set(prototype.scaleMatrix)
+        trimmedPath.set(prototype.trimmedPath)
+        strokeRatio = prototype.strokeWidth
+        pathDataNodes = PathParser.deepCopyNodes(prototype.pathDataNodes)
+    }
+
     init {
         updatePaint()
     }

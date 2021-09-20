@@ -21,9 +21,11 @@ import com.suenara.enhancedvectordrawable.internal.VectorDrawableParser
  * — there is no tint support (TBD)
  */
 @Keep
-class EnhancedVectorDrawable
-@Throws(Resources.NotFoundException::class)
-constructor(private val resources: Resources, @DrawableRes private val resId: Int) : Drawable(), VectorPathContainer {
+class EnhancedVectorDrawable : Drawable, VectorPathContainer {
+
+    @DrawableRes
+    private val resId: Int
+    private val resources: Resources
 
     private val shape: Shape
     private var left: Int = 0
@@ -34,12 +36,22 @@ constructor(private val resources: Resources, @DrawableRes private val resId: In
     private var strokeRatio: Float = 1f
     private val scaleMatrix = Matrix()
 
-    init {
+    constructor(context: Context, resId: Int) : this(context.resources, resId)
+
+    @Throws(Resources.NotFoundException::class)
+    constructor(resources: Resources, @DrawableRes resId: Int) : super() {
+        this.resources = resources
+        this.resId = resId
         shape = if (resId != 0) buildShape(resId) else Shape.EMPTY
         setBounds(0, 0, dp(shape.width), dp(shape.height))
     }
 
-    constructor(context: Context, resId: Int) : this(context.resources, resId)
+    internal constructor(prototype: EnhancedVectorDrawable) : super() {
+        this.resources = prototype.resources
+        this.resId = prototype.resId
+        this.shape = Shape(prototype.shape)
+        setBounds(0, 0, dp(shape.width), dp(shape.height))
+    }
 
     override fun draw(canvas: Canvas) {
         alpha = shape.alpha
